@@ -1,0 +1,47 @@
+name: Auto Save SHSH2
+permissions: write-all # Allow Release 允许发布 release
+env:
+  MODEL: iPhone8,1 # required
+  # choosing one of these three below and comment others
+  LATEST: true # if set true, FIRMWARE_VERSION and FIRMWARE_BUILD_ID will become invalid
+  FIRMWARE_VERSION: 15.7
+  FIRMWARE_BUILD_ID: 19H12 # if set this, FIRMWARE_VERSION will become invalid
+  # 
+  NO_BOARDBAND: false # if set true, BOARDBAND will become invalid
+  BOARDBAND: n71ap # recommend set this for iPhone
+  # 
+  ECID: ab46efcbf71 # must be either DEC or HEX
+  GEN: "0x1111111111111111" # manually specify generator in format 0x%%16llx
+  APNONCE: "" # required for saving blobs for A12/S4 and newer devices with generator
+  # Enable the following options to use beta firmware
+  OTA: true
+  BETA: true
+
+
+on:
+  # schedule:
+  #   - cron: '20 5 * * 3' # Every Wednesday at 5:20
+  workflow_dispatch:
+    inputs:
+      args:
+        description: 'Manual Arguments(Will use args here)'
+        required: true
+        default: "-d iPhone6,2 -B N53AP -e 6F40A4CD908 -l -s --save-path ~/blobs"
+
+jobs:
+  save_shsh2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # - name: get tsschecker
+      #   run: |
+      #     export actPWD=`pwd`
+      #     wget https://github.com/tom-snow/autosave_SHSH2/releases/download/v0.1/tsschecker -O ./tsschecker
+      #     chmod +x ./tsschecker
+      #     sudo apt install -y libplist-dev libirecovery-1.0-3 libcurl4-openssl-dev 
+
+      # - name: run tsschecker
+      #   run: |
+      #     ./tsschecker ${{ github.event.inputs.args }}
+      
