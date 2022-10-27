@@ -63,11 +63,23 @@ jobs:
             echo "blobs folder is empty!"
             exit 1
           fi
-          echo firmware=`echo ${output} | awk -F '_' '{print $4}'` >> $GITHUB_OUTPUT
+          firmware=`echo ${output} | awk -F '_' '{print $4}'`
+          echo firmware="${firmware}" >> $GITHUB_OUTPUT
           echo nonce=`echo ${output} | awk -F '_' '{print $5}' | awk -F '.' '{print $1}'` >> $GITHUB_OUTPUT
-          echo ${{ steps.shsh2-info.outputs.nonce }}
+          echo tagName="${firmware}" >> $GITHUB_OUTPUT # + ecid
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.shsh2-info.outputs.nonce }}
-          path: blobs/*  
+          path: blobs/*
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ success() }}
+        with:
+          tag_name: ${{ steps.shsh2-info.outputs.tagName }}
+          body: >-
+            ${{ format(fromJSON('"firmware: {0}\nnonce: {1}\n"'), 
+                  steps.shsh2-info.outputs.firmware, 
+                  steps.shsh2-info.outputs.nonce
+                ) }}
+          files: blobs/*
