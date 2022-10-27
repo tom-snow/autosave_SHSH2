@@ -26,7 +26,7 @@ on:
       args:
         description: 'Manual Arguments(Will use args here)'
         required: true
-        default: "-d iPhone6,2 -B N53AP -e 6F40A4CD908 -l -s --save-path .\\blobs"
+        default: "-d iPhone6,2 -B n53ap -e 6F40A4CD908 -l -s --save-path .\\blobs --print-tss-request --print-tss-response"
 
 jobs:
   save_shsh2:
@@ -37,5 +37,13 @@ jobs:
       - name: run tsschecker
         shell: pwsh
         run: |
-          .\\tsschecker378.exe ${{ github.event.inputs.args }}
+          if(!(Test-Path "blobs")) { mkdir "blobs" }
+          tsschecker378.exe ${{ github.event.inputs.args }}
+      
+      - name: get info
+        shell: bash
+        run: |
+          output=`ls blobs`
+          echo ${output}
+
       
