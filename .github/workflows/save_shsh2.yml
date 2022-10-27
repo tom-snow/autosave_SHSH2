@@ -30,18 +30,12 @@ on:
 
 jobs:
   save_shsh2:
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
 
-      # - name: get tsschecker
-      #   run: |
-      #     export actPWD=`pwd`
-      #     wget https://github.com/tom-snow/autosave_SHSH2/releases/download/v0.1/tsschecker -O ./tsschecker
-      #     chmod +x ./tsschecker
-      #     sudo apt install -y libplist-dev libirecovery-1.0-3 libcurl4-openssl-dev 
-
-      # - name: run tsschecker
-      #   run: |
-      #     ./tsschecker ${{ github.event.inputs.args }}
+      - name: run tsschecker
+        shell: pwsh
+        run: |
+          .\\tsschecker378.exe ${{ github.event.inputs.args }}
       
