@@ -16,6 +16,10 @@ env:
   # Enable the following options to use beta firmware
   OTA: true
   BETA: true
+  # Logging
+  LOG_REQ: false # print the TSS request that will be sent to Apple
+  LOG_RSP: false # print the TSS response that comes from Apple
+  LOG_RAW: false # send raw file to Apple's TSS server (useful for debugging)
 
 
 on:
@@ -34,6 +38,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: prepare (auto)
+        if: github.event.inputs == 0
+        run: |
+          echo "auto"
+
+      - name: prepare (manually)
+        if: github.event.inputs
+        run: |
+          echo "manually"
+
       - name: run tsschecker
         shell: pwsh
         run: |
@@ -41,9 +55,16 @@ jobs:
           .\\tsschecker378.exe ${{ github.event.inputs.args }}
       
       - name: get info
+        id: shsh2-info
         shell: bash
         run: |
           output=`ls blobs`
-          echo ${output}
+          if [ -z $output ]; then
+            echo "blobs folder is empty!"
+            exit 1
+          fi
+          echo firmware=`echo ${output} | awk -F '_' '{print $4}'` >> $GITHUB_OUTPUT
+          echo nonce=`echo ${output} | awk -F '_' '{print $5}' | awk -F '.' '{print $1}'` >> $GITHUB_OUTPUT
+
 
       
