@@ -43,6 +43,7 @@ jobs:
 
       - name: prepare (auto)
         if: github.event.inputs == 0
+        shell: bash
         run: |
           echo "auto"
           tss_arg=""
@@ -106,6 +107,7 @@ jobs:
 
       - name: prepare (manually)
         if: github.event.inputs
+        shell: bash
         run: |
           echo "manually"
           echo "${{ github.event.inputs.args }}"
