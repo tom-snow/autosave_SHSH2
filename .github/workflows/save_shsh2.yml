@@ -31,7 +31,7 @@ on:
   workflow_dispatch:
     inputs:
       args:
-        description: 'Manual Arguments(Will use args here)'
+        description: 'Manual Arguments(Will use args here, use `--ecid` instead of `-e`)'
         required: true
         default: "-d iPhone6,2 -B n53ap --ecid 6F40A4CD908 -l -s --save-path .\\blobs"
 
@@ -110,7 +110,7 @@ jobs:
         shell: bash
         run: |
           echo "manually"
-          echo "${{ github.event.inputs.args }}"
+          echo ECID=`echo "${{ github.event.inputs.args }}" | awk -F '--ecid' '{print $2}' | awk '{print $1}'` >> $GITHUB_ENV
           echo tssArg="${{ github.event.inputs.args }}" >> $GITHUB_ENV
 
       - name: run tsschecker
@@ -131,7 +131,11 @@ jobs:
           fi
           firmware=`echo ${output} | awk -F '_' '{print $4}'`
           echo firmware="${firmware}" >> $GITHUB_OUTPUT
+
           echo nonce=`echo ${output} | awk -F '_' '{print $5}' | awk -F '.' '{print $1}'` >> $GITHUB_OUTPUT
+
+          echo model=`echo ${output} | awk -F '_' '{print $2}'` >> $GITHUB_OUTPUT
+
           echo tagName="${firmware}" >> $GITHUB_OUTPUT # + ecid
 
       - uses: actions/upload-artifact@v2
@@ -144,8 +148,14 @@ jobs:
         with:
           tag_name: ${{ steps.shsh2-info.outputs.tagName }}
           body: >-
-            ${{ format(fromJSON('"firmware: {0}\nnonce: {1}\n"'), 
-                  steps.shsh2-info.outputs.firmware, 
-                  steps.shsh2-info.outputs.nonce
-                ) }}
+            ${{ format(fromJSON('"ecid: {0}\nmodel: {1}\nfirmware: {2}\nnonce: {3}\n"'), 
+                env.ECID, 
+                steps.shsh2-info.outputs.model, 
+                steps.shsh2-info.outputs.firmware, 
+                steps.shsh2-info.outputs.nonce
+              ) }}
           files: blobs/*
+
+      - name: Test Release
+        if: ${{ failure() }}
+        run: echo "Already Released!"
