@@ -112,7 +112,6 @@ jobs:
         run: |
           if(!(Test-Path "blobs")) { mkdir "blobs" }
           echo ${{ env.tss_arg }}
-          echo ${{ env::env.tss_arg }}
           .\\tsschecker378.exe ${{ env.tss_arg }}
       
       - name: get info
