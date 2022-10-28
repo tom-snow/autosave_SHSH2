@@ -23,6 +23,9 @@ env:
 
 
 on:
+  push:
+    branches:
+      - 'master'
   schedule:
     - cron: '20 5 * * 5' # Every Friday at 5:20 [ 北京时间 13:50 (utc+8) ]
   workflow_dispatch:
@@ -98,21 +101,22 @@ jobs:
 
           tss_arg=$tss_arg" -s --save-path .\\blobs "
 
-          echo tss_arg="$tss_arg" >> $GITHUB_ENV
+          echo tssArg="$tss_arg" >> $GITHUB_ENV
 
 
       - name: prepare (manually)
         if: github.event.inputs
         run: |
           echo "manually"
-          echo tss_arg="${{ github.event.inputs.args }}" >> $GITHUB_ENV
+          echo "${{ github.event.inputs.args }}"
+          echo tssArg="${{ github.event.inputs.args }}" >> $GITHUB_ENV
 
       - name: run tsschecker
         shell: pwsh
         run: |
           if(!(Test-Path "blobs")) { mkdir "blobs" }
-          echo ${{ env.tss_arg }}
-          .\\tsschecker378.exe ${{ env.tss_arg }}
+          echo ${{ env.tssArg }}
+          .\\tsschecker378.exe ${{ env.tssArg }}
       
       - name: get info
         id: shsh2-info
