@@ -33,7 +33,7 @@ on:
       args:
         description: 'Manual Arguments(Will use args here)'
         required: true
-        default: "-d iPhone6,2 -B n53ap -e 6F40A4CD908 -l -s --save-path .\\blobs"
+        default: "-d iPhone6,2 -B n53ap --ecid 6F40A4CD908 -l -s --save-path .\\blobs"
 
 jobs:
   save_shsh2:
@@ -60,7 +60,7 @@ jobs:
             tss_arg=$tss_arg" -d "${{ env.MODEL }}
           fi
           if [ -n "${{ env.ECID }}" ]; then
-            tss_arg=$tss_arg" -e "${{ env.ECID }}
+            tss_arg=$tss_arg" --ecid "${{ env.ECID }}
           fi
 
           if [ "${{ env.LATEST }}" = "true" ]
