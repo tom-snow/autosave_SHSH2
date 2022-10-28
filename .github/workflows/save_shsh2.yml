@@ -15,7 +15,7 @@ env:
   GEN: "0x1111111111111111" # manually specify generator in format 0x%%16llx
   APNONCE: "" # required for saving blobs for A12/S4 and newer devices with generator
   ## --- Enable the following options to use beta firmware
-  BETA: true
+  BETA: false
   ## --- Logging
   LOG_REQ: false # print the TSS request that will be sent to Apple
   LOG_RSP: false # print the TSS response that comes from Apple
