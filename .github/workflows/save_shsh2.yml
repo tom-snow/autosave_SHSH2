@@ -19,7 +19,6 @@ env:
   ## --- Logging
   LOG_REQ: false # print the TSS request that will be sent to Apple
   LOG_RSP: false # print the TSS response that comes from Apple
-  LOG_RAW: false # send raw file to Apple's TSS server (useful for debugging)
 
 
 on:
@@ -27,13 +26,13 @@ on:
     branches:
       - 'master'
   schedule:
-    - cron: '20 5 * * 5' # Every Friday at 5:20 [ 北京时间 13:50 (utc+8) ]
+    - cron: '20 5 * * 1' # Runs at 05:20 UTC on Mon.
   workflow_dispatch:
     inputs:
       args:
-        description: 'Manual Arguments(Will use args here, use `--ecid` instead of `-e`)'
+        description: 'Manual Arguments(Will use args here instead of using env. Use `--ecid` instead of `-e` if you get some error. Do not set `-s` and `--save-path`!)\n\n本程序免费开源，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！'
         required: true
-        default: "-d iPhone6,2 -B n53ap --ecid 6F40A4CD908 -l -s --save-path .\\blobs"
+        default: "-d iPhone6,2 -B n53ap --ecid 6F40A4CD908 -l"
 
 jobs:
   save_shsh2:
@@ -45,7 +44,7 @@ jobs:
         if: github.event.inputs == 0
         shell: bash
         run: |
-          echo "auto"
+          echo "Auto mode.\n本程序免费开源，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！"
           tss_arg=""
 
           if [ -z "${{ env.MODEL }}" ] || [ -z "${{ env.ECID }}" ]; then 
@@ -96,9 +95,6 @@ jobs:
           if [ "${{ env.LOG_RSP }}" = "true" ]; then
             tss_arg=$tss_arg" --print-tss-response "
           fi
-          if [ "${{ env.LOG_RAW }}" = "true" ]; then
-            tss_arg=$tss_arg" --raw "
-          fi
 
           tss_arg=$tss_arg" -s --save-path .\\blobs "
 
@@ -109,15 +105,15 @@ jobs:
         if: github.event.inputs
         shell: bash
         run: |
-          echo "manually"
+          echo "Manually run.\n本程序免费开源，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！"
           echo ECID=`echo "${{ github.event.inputs.args }}" | awk -F '--ecid' '{print $2}' | awk '{print $1}'` >> $GITHUB_ENV
-          echo tssArg="${{ github.event.inputs.args }}" >> $GITHUB_ENV
+          echo tssArg="${{ github.event.inputs.args }} -s --save-path .\\blobs" >> $GITHUB_ENV
 
       - name: run tsschecker
         shell: pwsh
         run: |
           if(!(Test-Path "blobs")) { mkdir "blobs" }
-          echo ${{ env.tssArg }}
+          echo ${{ env.tssArg }} "\n本程序免费开源，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！"
           .\\tsschecker378.exe ${{ env.tssArg }}
       
       - name: get info
@@ -136,10 +132,15 @@ jobs:
 
           echo model=`echo ${output} | awk -F '_' '{print $2}'` >> $GITHUB_OUTPUT
 
-          echo tagName="${firmware}" >> $GITHUB_OUTPUT # + ecid
+          echo tagName="${firmware}" >> $GITHUB_OUTPUT
+
+          mv "./blobs/"$output "./blobs/"`date +"%Y-%m-%d"`"_"$output
+
+          echo artifactName=$output >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v2
         with:
+          name: steps.shsh2-info.outputs.artifactName
           path: blobs/*
 
       - name: Release
@@ -148,14 +149,10 @@ jobs:
         with:
           tag_name: ${{ steps.shsh2-info.outputs.tagName }}
           body: >-
-            ${{ format(fromJSON('"ecid: {0}\nmodel: {1}\nfirmware: {2}\nnonce: {3}\n"'), 
+            ${{ format(fromJSON('"ecid: {0}\nmodel: {1}\nfirmware: {2}\nnonce: {3}\n\n\n本程序免费[开源](https://github.com/tom-snow/autosave_SHSH2)，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！"'), 
                 env.ECID, 
                 steps.shsh2-info.outputs.model, 
                 steps.shsh2-info.outputs.firmware, 
                 steps.shsh2-info.outputs.nonce
               ) }}
           files: blobs/*
-
-      - name: Test Release
-        if: ${{ failure() }}
-        run: echo "Already Released!"
