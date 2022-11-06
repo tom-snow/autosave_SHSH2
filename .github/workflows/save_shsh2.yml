@@ -6,11 +6,11 @@ env:
   ECID: ab46efcbf71 # must be either DEC or HEX
   ## --- choosing one of these three below and comment others
   LATEST: true # if set true, FIRMWARE_VERSION and FIRMWARE_BUILD_ID will become invalid
-  FIRMWARE_VERSION: 15.7 # specify firmware version
+  # FIRMWARE_VERSION: 15.7 # specify firmware version
   # FIRMWARE_BUILD_ID: 19H12 # if set this, FIRMWARE_VERSION will become invalid
   ## ---
   NO_BOARDBAND: false # Request tickets without baseband. If set true, BOARDBAND will become invalid
-  BOARDBAND: n71ap # recommend set this for iPhone
+  BOARDBAND: n71ap # recommend set this for iPhone. Specific boardconfig instead of device model
   ## ---
   GEN: "0x1111111111111111" # manually specify generator in format 0x%%16llx
   APNONCE: "" # required for saving blobs for A12/S4 and newer devices with generator
@@ -32,7 +32,7 @@ on:
       args:
         description: 'Manual Arguments(Will use args here instead of using env. Use `--ecid` instead of `-e` if you get some error. Do not set `-s` and `--save-path`!)\n\n本程序免费开源，如果你从其他人那付费获得了 Github Action 自动保存 shsh2 的程序，那么恭喜你被骗了！'
         required: true
-        default: "-d iPhone6,2 -B n53ap --ecid 6F40A4CD908 -l"
+        default: "-d iPhone8,1 -B n71ap --ecid ab46efcbf71 -l --generator 0x1111111111111111"
 
 jobs:
   save_shsh2:
