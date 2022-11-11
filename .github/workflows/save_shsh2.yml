@@ -25,6 +25,8 @@ on:
   push:
     branches:
       - 'master'
+    paths:
+      - .github/workflows/*
   schedule:
     - cron: '20 5 * * 1' # Runs at 05:20 UTC on Mon.
   workflow_dispatch:
