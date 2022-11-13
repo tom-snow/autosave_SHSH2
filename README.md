@@ -3,8 +3,9 @@
 使用 Actions 自动保存 shsh2. ([English Readme](#english-readme))
 
 ## 风险说明
-本脚本行为可能违反 Github 的 TOC， 使用本脚本甚至可能会让你被封禁，请慎重使用。<br>
-This script may violate Github TOC, Do not use!
+本脚本行为可能违反 Github 的 ToS， 使用本脚本甚至可能会让你被封禁，请慎重使用。<br>
+This script may violate Github ToS, not suggest to use!
+
 
 ## 使用说明
 1. 点击右上角的 `Use this template` 以本仓库作为模版创建仓库(建议设为私有仓库).
